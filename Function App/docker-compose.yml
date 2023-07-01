@@ -1,0 +1,12 @@
+version: '3.9'
+services:     
+  azure-function:
+    image: mcr.microsoft.com/azure-functions/powershell:4.0
+    container_name: azfunc 
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    env_file:
+      - '.env.azfunc'
+    volumes:
+      - /home/${USER}/azfunc:/home/site/wwwroot
