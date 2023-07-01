@@ -1,15 +1,15 @@
 <#
  .Synopsis
-  Functions to determine Wheater conditions in Dutch metrics
+  Functions to determine weather conditions in Dutch metrics
 
  .Description
-  Functions to determine Wheater conditions in Dutch metrics
+  Functions to determine weather conditions in Dutch metrics
 #>
 
 # Function to convert rawdata to table
 function Convert-RawData {
     param (
-        [Parameter(Mandatory=$True,HelpMessage="Raw data retrieved from wheater station")]
+        [Parameter(Mandatory=$True,HelpMessage="Raw data retrieved from weather station")]
         [array]$rawData
     )
     # Split string into rows

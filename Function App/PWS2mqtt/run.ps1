@@ -9,33 +9,34 @@ $env:script = ($MyInvocation.MyCommand.Name).replace("_","")
 
 # Convert and calculate european values
 Write-Log -value "Converting the rawdata"
-$rawWheaterData = Convert-RawData -rawData $Request.RawBody
-[pscustomobject]$wheaterData = @{
-    temperature_outdoor = Convert-Farenheit2Celcius -farenheit $rawWheaterData.tempf
-    temperature_indoor = Convert-Farenheit2Celcius -farenheit $rawWheaterData.tempinf
-    humidity_outdoor = $rawWheaterData.humidity
-    humidity_indoor = $rawWheaterData.humidityin
-    barometer_relative = Convert-Pressure2hPa -pressure $rawWheaterData.baromrelin
-    barometer_absolute = Convert-Pressure2hPa -pressure $rawWheaterData.baromabsin
-    rainrate_mmh = Convert-Rainrate2mmh -rainRate $rawWheaterData.rainratein
-    rain_mm = Convert-Rainrate2mmh -rainRate $rawWheaterData.dailyrainin
-    solar_radiation = $rawWheaterData.solarradiation
-    uv = $rawWheaterData.uv
-    wind_speed = Convert-Windspeed2ms -windspeed $rawWheaterData.windspeedmph
-    wind_gust = Convert-Windspeed2ms -windspeed $rawWheaterData.windgustmph
-    wind_direction = $rawWheaterData.winddir
-    wind_direction_abbreviation = (Get-WindDirection -Degree $rawWheaterData.winddir).Abbreviation
-    wind_direction_entext = (Get-WindDirection -Degree $rawWheaterData.winddir).Direction
-    stationtype = $rawWheaterData.stationtype
-    model = $rawWheaterData.model
-    dewpoint = Get-Dewpoint -outdoorFarenheit $rawWheaterData.tempf -outdoorHumidity $rawWheaterData.humidity
-    windchill = Get-Windchill -windspeed $rawWheaterData.windspeedmph -outdoorFarenheit $rawWheaterData.tempf
-    heat_index = Get-HeatIndex -outdoorFarenheit $rawWheaterData.tempf -outdoorHumidity $rawWheaterData.humidity
+$rawweatherData = Convert-RawData -rawData $Request.RawBody
+[pscustomobject]$weatherData = @{
+    temperature_outdoor = Convert-Farenheit2Celcius -farenheit $rawweatherData.tempf
+    temperature_indoor = Convert-Farenheit2Celcius -farenheit $rawweatherData.tempinf
+    humidity_outdoor = $rawweatherData.humidity
+    humidity_indoor = $rawweatherData.humidityin
+    barometer_relative = Convert-Pressure2hPa -pressure $rawweatherData.baromrelin
+    barometer_absolute = Convert-Pressure2hPa -pressure $rawweatherData.baromabsin
+    rainrate_mmh = Convert-Rainrate2mmh -rainRate $rawweatherData.rainratein
+    rain_mm = Convert-Rainrate2mmh -rainRate $rawweatherData.dailyrainin
+    solar_radiation = $rawweatherData.solarradiation
+    uv = $rawweatherData.uv
+    wind_speed = Convert-Windspeed2ms -windspeed $rawweatherData.windspeedmph
+    wind_gust = Convert-Windspeed2ms -windspeed $rawweatherData.windgustmph
+    wind_direction = $rawweatherData.winddir
+    wind_direction_abbreviation = (Get-WindDirection -Degree $rawweatherData.winddir).Abbreviation
+    wind_direction_entext = (Get-WindDirection -Degree $rawweatherData.winddir).Direction
+    stationtype = $rawweatherData.stationtype
+    model = $rawweatherData.model
+    dewpoint = Get-Dewpoint -outdoorFarenheit $rawweatherData.tempf -outdoorHumidity $rawweatherData.humidity
+    windchill = Get-Windchill -windspeed $rawweatherData.windspeedmph -outdoorFarenheit $rawweatherData.tempf
+    heat_index = Get-HeatIndex -outdoorFarenheit $rawweatherData.tempf -outdoorHumidity $rawweatherData.humidity
 }
 
 # Export for debugging
-#$wheaterData | Export-Clixml -path "wheaterdata.xml"
-Write-Output ($wheaterData | Out-String)
+#$Request.RawBody | Export-Clixml "rawbody.xml"
+#$weatherData | Export-Clixml -path "weatherdata.xml"
+Write-Output ($weatherData | Out-String)
 
 # Load MQTT module
 Add-Type -Path ".\Modules\MQTTmodule\M2Mqtt.Net.dll"
@@ -80,15 +81,18 @@ else{
 
 # Publishing data to MQTT
 Write-Log "Publishing data per topic"
-Publish-Statistics -MQTTobject $MQTTobject -statisticsData $wheaterData -mainTopic $env:PWSname
+Publish-Statistics -MQTTobject $MQTTobject -statisticsData $weatherData -mainTopic $env:PWSname
 Write-Log "Publishing json data"
-Publish-StatisticsasJson -MQTTobject $MQTTobject -statisticsData $wheaterData -mainTopic $env:PWSname
+Publish-StatisticsasJson -MQTTobject $MQTTobject -statisticsData $weatherData -mainTopic $env:PWSname
 Write-Log "Publishing raw data (json)"
-Publish-StatisticsasJson -MQTTobject $MQTTobject -statisticsData $rawWheaterData -mainTopic $env:PWSname -topic 'rawWheaterData'
+Publish-StatisticsasJson -MQTTobject $MQTTobject -statisticsData $rawweatherData -mainTopic $env:PWSname -topic 'rawweatherData'
 
 # Disconnect MQTT
 Write-Log "Disconnecting MQTT"
 $MQTTobject.Disconnect()
+
+#$Request.RawBody | Export-Clixml "rawbody.xml"
+#Invoke-WebRequest -UseDefaultCredentials -Uri "http://dze.schermers.local:5000/weatherstation/updateweatherstation.php?" -Method Get -Body $Request.RawBody -AllowUnencryptedAuthentication
 
 Write-Log "End of function app"
 
