@@ -1,5 +1,6 @@
 version: '3.9'
-services:     
+services:
+  # Azure functions to run the PowerShell function PWS2mqtt     
   azure-functions:
     image: mcr.microsoft.com/azure-functions/powershell:4.0
     container_name: azure-functions 
@@ -10,3 +11,16 @@ services:
       - '.env.azfunc'
     volumes:
       - /home/${USER}/Function Apps:/home/site/wwwroot
+
+  # Mosquitto container to send the PWS values to
+  mqtt:
+    container_name: mqtt
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+    volumes:
+      - /home/${USER}/mqtt/data:/mosquitto/data
+      - /home/${USER}/mqtt/log:/mosquitto/log
+      - /home/${USER}/mqtt/conf:/mosquitto/config
+    restart: unless-stopped
+    user: 1000:1000
