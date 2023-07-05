@@ -19,6 +19,7 @@ $rawweatherData = Convert-RawData -rawData $Request.RawBody
     barometer_absolute = Convert-Pressure2hPa -pressure $rawweatherData.baromabsin
     rainrate_mmh = Convert-Rainrate2mmh -rainRate $rawweatherData.rainratein
     rain_mm = Convert-Rainrate2mmh -rainRate $rawweatherData.dailyrainin
+    totalrain_mm = Convert-Rainrate2mmh -rainRate $rawweatherData.totalrainin
     solar_radiation = $rawweatherData.solarradiation
     uv = $rawweatherData.uv
     wind_speed = Convert-Windspeed2ms -windspeed $rawweatherData.windspeedmph
