@@ -11,7 +11,7 @@ Prerequisites: You need to create dummy devices yourself:
 - Type: Dummy (Does nothing, use for virtual switches only)
 ]]--
 
-local LOGGING = true
+local LOGGING = false
 
 -- JSON function required to decode MQTT data
 local json = (loadfile "/opt/domoticz/userdata/scripts/lua/JSON.lua")()

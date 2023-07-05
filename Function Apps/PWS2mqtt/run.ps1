@@ -7,6 +7,27 @@ param($Request, $TriggerMetadata)
 # Define script var to its name
 $env:script = ($MyInvocation.MyCommand.Name).replace("_","")
 
+# Function to prepare domoticz message
+function Get-DomoticzMessage {
+    param (
+        [Parameter(Mandatory=$True,HelpMessage="Data as array")]
+        [pscustomobject]$weatherData,
+        [Parameter(Mandatory=$True,HelpMessage="Custom event to trigger")]
+        [string]$CustomEvent
+    )
+    # Prepare domoticz output
+    $domoticzOutput = $weatherData | ConvertTo-Json
+
+    # Define domoticz custom event trigger
+    $domoticzMessage = @{
+        command = "customevent"
+        event = $CustomEvent
+        data = $domoticzOutput
+    } | ConvertTo-Json
+
+    return $domoticzMessage
+}
+
 # Verify if incoming data contains weather data
 if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") {
     Write-Log "Incomging data seems valid weather data, continue processing"
@@ -48,12 +69,6 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
     Add-Type -Path ".\Modules\MQTTmodule\M2Mqtt.Net.dll"
     Write-Log "M2MQtt module loaded"
 
-    # Verify if MQTT port is filled
-    if(!($env:MQTTport)) {
-        $env:MQTTport = 1883
-        Write-Log "Default MQTT port selected"
-    }
-
     # Verify if MQTT address is filled
     if(!$($env:MQTTserver)) {
         Write-Log "No MQTT server defined! Stop script"
@@ -62,7 +77,7 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
 
     # Verify if retain data is set
     if(!($env:retainData)) {
-        $env:retainData = 1 # 0 = False, 1 = true
+        $env:retainData = 0 # 0 = False, 1 = true
         Write-Log "Default MQTT retain bit is set"
     }
 
@@ -72,54 +87,68 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
         $env:PWSname = "MyPWS"
     }
 
-    # Define MQTT client object
-    $MQTTobject = New-Object uPLibrary.Networking.M2Mqtt.MqttClient($env:MQTTserver, $env:MQTTport, $false, [uPLibrary.Networking.M2Mqtt.MqttSslProtocols]::None, $null, $null)
-
-    Write-Log "Connecting to MQTT server $env:MQTTserver:$env:MQTTport"
-    if($env:MQTTuser -or $env:MQTTpassword) {
-        # Connect with username and password
-        $MQTTobject.Connect([guid]::NewGuid(), $env:MQTTuser, $env:MQTTpassword) 
-    }
-    else{
-        # Connect anonymous
-        $MQTTobject.Connect([guid]::NewGuid()) 
+    # Verify if PWS eventname is entered, otherwise make a default
+    if(!$($env:DomoticzCustomEvent)) {
+        $env:DomoticzCustomEvent = "PWS2mqtt"
     }
 
-    # Publishing data to MQTT
-    Write-Log "Publishing data per topic"
-    Publish-Statistics -MQTTobject $MQTTobject -statisticsData $weatherData -mainTopic $env:PWSname
-    Write-Log "Publishing json data"
-    Publish-StatisticsasJson -MQTTobject $MQTTobject -statisticsData $weatherData -mainTopic $env:PWSname
-    Write-Log "Publishing raw data (json)"
-    Publish-StatisticsasJson -MQTTobject $MQTTobject -statisticsData $rawweatherData -mainTopic $env:PWSname -topic 'rawweatherData'
+    # Create array of MQTT instances
+    $MQTTinstances = @() 
+    Write-Log
+    # Add MQTT properties to array
+    $MQTTinstances += [PSCustomObject]@{
+        MQTTserver = $env:MQTTserver;
+        MQTTport = $env:MQTTport;
+        MQTTuser = $env:MQTTuser;
+        MQTTpassword = $env:MQTTpassword;
+    }
 
-    # Only publish to Domoticz if topic is entered
-    if($env:DomoticzInTopic) {
-        Write-Log "Domoticz topic entered: $env:DomoticzInTopic"
-        # Verify if domoticz event is given
-        if(!($env:DomoticzCustomEvent)) {
-            $env:DomoticzCustomEvent = "PWS2mqtt"
-            Write-Log "Default Domoticz eventname 'PWS2mqtt' set"
+    # Add MQTT properties to array
+    $MQTTinstances += [PSCustomObject]@{
+        MQTTserver = $env:MQTTserver2;
+        MQTTport = $env:MQTTport2;
+        MQTTuser = $env:MQTTuser2;
+        MQTTpassword = $env:MQTTpassword2;
+    }
+
+    # Prepare Domoticz message
+    $domoticzMessage = Get-DomoticzMessage -weatherData $weatherData -CustomEvent $env:DomoticzCustomEvent
+
+    # Loop through every MQTT instance to publish the messages
+    foreach($MQTTinstance in $MQTTinstances) {
+        # Verify if MQTTserver name is filled, otherwise skip
+        if($MQTTinstance.MQTTserver) {
+            # Clear MQTTobject
+            $MQTTobject = $null
+
+            # Verify if MQTT port is filled
+            if(!($MQTTinstance.MQTTport)) {
+                $MQTTinstance.MQTTport = 1883
+                Write-Log "Default MQTT port selected for $($MQTTinstance.MQTTserver)"
+            }
+
+            # Define MQTT client object
+            $MQTTobject = New-Object uPLibrary.Networking.M2Mqtt.MqttClient($MQTTinstance.MQTTserver, $MQTTinstance.MQTTport, $false, [uPLibrary.Networking.M2Mqtt.MqttSslProtocols]::None, $null, $null)
+
+            Write-Log "Connecting to MQTT server $($MQTTinstance.MQTTserver):$($MQTTinstance.MQTTport)"
+            if($MQTTinstance.MQTTuser -and $MQTTinstance.MQTTpassword) {
+                # Connect with username and password
+                $MQTTobject.Connect([guid]::NewGuid(), $MQTTinstance.MQTTuser, $MQTTinstance.MQTTpassword) 
+            }
+            else{
+                # Connect anonymous
+                $MQTTobject.Connect([guid]::NewGuid()) 
+            }
+
+            # Publish all messages to MQTT
+            Write-Log "Sending messages to: $($MQTTinstance.MQTTserver)"
+            Publish-All2MQTT -MQTTobject $MQTTobject -weatherData $weatherData -rawweatherData $rawweatherData -PWSname $env:PWSname -DomoticzInTopic $env:DomoticzInTopic -DomoticzMessage $domoticzMessage -retainData $env:retainData
+
+            # Disconnect MQTT
+            Write-Log "Disconnecting from: $($MQTTinstance.MQTTserver)"
+            $MQTTobject.Disconnect()
         }
-
-        # Prepare domoticz output
-        $domoticzOutput = $weatherData | ConvertTo-Json
-
-        # Define domoticz custom event trigger
-        $domoticzMessage = @{
-            command = "customevent"
-            event = $env:DomoticzCustomEvent
-            data = $domoticzOutput
-        } | ConvertTo-Json
-
-        # Publish message
-        Write-Log "Publishing domoticz data"
-        Publish-Message -MQTTobject $MQTTobject -jsonData $domoticzMessage -topic $env:DomoticzInTopic
     }
-
-    # Disconnect MQTT
-    Write-Log "Disconnecting MQTT"
-    $MQTTobject.Disconnect()
 }
 else{
     # Incoming data doesn't contain expected data

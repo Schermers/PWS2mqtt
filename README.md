@@ -22,8 +22,17 @@ Look at the [docker-comopose.yml](docker-compose.yml) for the docker setup that 
 1. Download the [Function Apps](Function%20Apps) folder to '/home/{USER}/Function Apps'
 1. Download the [.env.azfunc](.env.azfunc) file next to your **docker-compose.yml** file
 1. Update the **.env.azfunc** file with its environment variables (like MQTT server, username, password, etc)
+
+### Home Assistant
 1. Add [MQTT sensors to HA](#home-assistant-configuration)
 2. This requires the [HA MQTT integration](https://www.home-assistant.io/integrations/mqtt)
+
+### Domoticz
+1. Create dummy devices (see dzVents script for details)
+1. Add dzVents script
+2. Update idx values in dzVents script
+1. Add JSON.lua to your domoticz folder
+1. Enter DomoticzInTopic variable in .env.azfunc
 
 ## Supported devices
 In general, if the station is supplied with `EasyWeather` software (version 1.4.x, 1.5.x, 1.6.x), it is likely that the station will work with this HA Configuration!
