@@ -34,6 +34,7 @@ $rawweatherData = Convert-RawData -rawData $Request.RawBody
 }
 
 # Export for debugging
+$Request | Export-Clixml "rawRequest.xml"
 #$Request.RawBody | Export-Clixml "rawbody.xml"
 #$weatherData | Export-Clixml -path "weatherdata.xml"
 Write-Output ($weatherData | Out-String)
@@ -87,12 +88,32 @@ Publish-StatisticsasJson -MQTTobject $MQTTobject -statisticsData $weatherData -m
 Write-Log "Publishing raw data (json)"
 Publish-StatisticsasJson -MQTTobject $MQTTobject -statisticsData $rawweatherData -mainTopic $env:PWSname -topic 'rawweatherData'
 
+# Only publish to Domoticz if topic is entered
+if($env:DomoticzInTopic) {
+    Write-Log "Domoticz topic entered: $env:DomoticzInTopic"
+    # Verify if domoticz event is given
+    if(!($env:DomoticzCustomEvent)) {
+        $env:DomoticzCustomEvent = "PWS2mqtt"
+        Write-Log "Default Domoticz eventname 'PWS2mqtt' set"
+    }
+
+    # Prepare domoticz output
+    $domoticzOutput = $weatherData | ConvertTo-Json
+
+    # Define domoticz custom event trigger
+    $domoticzMessage = @{
+        command = "customevent"
+        event = $env:DomoticzCustomEvent
+        data = $domoticzOutput
+    } | ConvertTo-Json
+
+    # Publish message
+    Publish-Message -MQTTobject $MQTTobject -jsonData $domoticzMessage -topic $env:DomoticzInTopic
+}
+
 # Disconnect MQTT
 Write-Log "Disconnecting MQTT"
 $MQTTobject.Disconnect()
-
-#$Request.RawBody | Export-Clixml "rawbody.xml"
-#Invoke-WebRequest -UseDefaultCredentials -Uri "http://dze.schermers.local:5000/weatherstation/updateweatherstation.php?" -Method Get -Body $Request.RawBody -AllowUnencryptedAuthentication
 
 Write-Log "End of function app"
 

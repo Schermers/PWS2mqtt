@@ -13,7 +13,6 @@ function Write-Log {
             Date = (Get-Date -format 'yyyy-MM-dd')
             Time = (Get-Date -format 'HH:mm:ss')
             Script = $env:script
-            ScriptVersion = $scriptVersion
             Event = $value
         } | Export-Csv -Path ".\Log\$($env:script)_$(Get-Date -Format "yyyy-MM-dd").csv" -Delimiter ';' -Append -Encoding utf8 -NoTypeInformation
     }

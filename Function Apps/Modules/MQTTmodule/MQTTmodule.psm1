@@ -44,5 +44,21 @@ function Publish-StatisticsasJson {
     $MQTTobject.Publish("pws/$mainTopic/$topic", [System.Text.Encoding]::UTF8.GetBytes($jsonData), 0, $env:retainData) 
 }
 
+# Function to publish the a single message
+function Publish-Message {
+    param (
+        [Parameter(Mandatory=$True,HelpMessage="MQTT Object")]
+        $MQTTobject,    
+        [Parameter(Mandatory=$True,HelpMessage="json Data")]
+        $jsonData,
+        [Parameter(Mandatory=$True,HelpMessage="Topic")]
+        [string]$topic
+    )
+    
+    # Publish message
+    $MQTTobject.Publish($topic, [System.Text.Encoding]::UTF8.GetBytes($jsonData), 0, $env:retainData)
+}
+
 Export-ModuleMember -Function Publish-Statistics
 Export-ModuleMember -Function Publish-StatisticsasJson
+Export-ModuleMember -Function Publish-Message
