@@ -17,3 +17,5 @@ function Write-Log {
         } | Export-Csv -Path ".\Log\$($env:script)_$(Get-Date -Format "yyyy-MM-dd").csv" -Delimiter ';' -Append -Encoding utf8 -NoTypeInformation
     }
 }
+
+Export-ModuleMember -Function Write-Log
