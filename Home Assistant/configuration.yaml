@@ -56,10 +56,16 @@ mqtt:
       unit_of_measurement: "UV Index"
       state_topic: "pws/MyPWS/uv"
     # Wind
-    - name: "PWS - Wind speed"
+    - name: "PWS - Wind speed m/s"
       unit_of_measurement: "m/s"
       state_class: measurement
-      state_topic: "pws/MyPWS/wind_speed"
+      state_topic: "pws/MyPWS/wind_speed_ms"
+    - name: "PWS - Wind speed km/h"
+      unit_of_measurement: "km/h"
+      state_class: measurement
+      state_topic: "pws/MyPWS/wind_speed_kph"
+    - name: "PWS - Wind scale beaufort"
+      state_topic: "pws/MyPWS/wind_scale_beaufort"
     - name: "PWS - Wind gust"
       unit_of_measurement: "m/s"
       state_topic: "pws/MyPWS/wind_gust"

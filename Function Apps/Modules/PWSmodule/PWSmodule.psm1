@@ -67,18 +67,191 @@ function Convert-Rainrate2mmh {
     return $mmh
 }
 
+# Original source: https://www.serverbrain.org/system-administration/a-powershell-function-to-translate-wind-speed-to-beaufort-scale-numbers.html
+# Mapping between ms and beaufort: https://nl.wikipedia.org/wiki/Schaal_van_Beaufort
+function Get-WindForce {
+
+    <#
+    .Synopsis
+       Returns beaufort and wind force name from speed in m/s
+    .DESCRIPTION
+       Returns beaufort and wind force in a give language from speed in m/s
+    .EXAMPLE
+       Get-WindForce -speed 2 -language EN
+    .EXAMPLE
+       Get-WindForce -speed 31.5 -language IT
+    .EXAMPLE
+        15,40 | Get-WindForce -Language FR -Verbose
+    .NOTES
+       happysysadm.com
+       @sysadm2010
+    #>
+    [CmdletBinding()]
+    [OutputType([string])]
+    Param
+    (
+        # Speed of wind in m/s
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [double]$Speed,
+
+        # Language to use for the output of the wind force
+        [string]$Language = 'EN'
+    )
+    Begin {
+        # Mapping between beaufort and windnames
+        [pscustomobject]$windnames = @{
+            0 = @{ 
+                EN = 'Calm'
+                IT = 'Calma'
+                FR = 'Calme'
+                DE = 'WindStille'
+                NL = 'Stil'
+            }
+            1 = @{
+                EN = 'Light air'
+                IT = 'Bava di vento'
+                FR = 'Très légère brise'
+                DE = 'Leichter Zug'
+                NL = 'Zeer zwar'
+            }
+            2 = @{
+                EN = 'Light breeze'
+                IT = 'Brezza leggera'
+                FR = 'Légère brise'
+                DE = 'Leichte Brise'
+                NL = 'Zwak'
+            }
+            3 = @{
+                EN = 'Gentle breeze'
+                IT = 'Brezza testa'
+                FR = 'Petite brise'
+                DE = 'Schwache Brise'
+                NL = 'Vrij matig'
+            }
+            4 = @{
+                EN = 'Moderate breeze'
+                IT = 'Vento moderato'
+                FR = 'Jolie brise'
+                DE = 'Mäßige Brise'
+                NL = 'Matig'
+            }
+            5 = @{
+                EN = 'Fresh breeze'
+                IT = 'Vento teso'
+                FR = 'Bonne brise'
+                DE = 'Frische Brise'
+                NL = 'Vrij krachtig'
+            }
+            6 = @{ 
+                EN = 'Strong breeze'
+                iT = 'Vento fresco'
+                FR = 'Vent frais'
+                DE = 'Starker Wind'
+                NL = 'Krachtig'
+            }
+            7 = @{
+                EN = 'Near gale'
+                IT = 'Vento forte'
+                FR = 'Grand frais'
+                DE = 'Steifer Wind'
+                NL = 'Hard'
+            }
+            8 = @{
+                EN = 'Gale'
+                IT = 'Burrasca'
+                FR = 'Coup de vent'
+                DE = 'Stürmischer Wind'
+                NL = 'Stormachtig'
+            }
+            9 = @{
+                EN = 'Strong gale'
+                IT = 'Burrasca forte'
+                FR = 'Fort coup de vent'
+                DE = 'Sturm'
+                NL = 'Storm'
+            }
+            10 = @{
+                EN = 'Storm'
+                IT = 'Tempesta'
+                FR = 'Tempête'
+                DE = 'Schwerer Sturm'
+                NL = 'Zware storm'
+            }
+            11 = @{ 
+                EN = 'Violent storm'
+                IT = 'Fortunale'
+                FR = 'Violent tempête'
+                DE = 'Orkanartiger Sturm'
+                NL = 'Orkaanachtig'
+            }
+            12 = @{
+                EN = 'Hurricane'
+                IT = 'Uragano'
+                FR = 'Ouragan'
+                DE = 'Orkan'
+                NL = 'Orkaan'
+            }
+        }
+    }
+
+    Process {
+        Write-Verbose "working on $speed m/s"
+        # Determine beaufort based on ms
+        $windforce = switch ($speed) {
+            {$_ -lt 0.3} { 0 }
+            {($_ -ge 0.3) -and ($_ -le 1.5)} { 1 }
+            {($_ -ge 1.6) -and ($_ -le 3.3)} { 2 }
+            {($_ -ge 3.4) -and ($_ -le 5.4)} { 3 }
+            {($_ -ge 5.5) -and ($_ -le 7.9)} { 4 }
+            {($_ -ge 8) -and ($_ -le 10.7)} { 5 }
+            {($_ -ge 10.8) -and ($_ -le 13.8)} { 6 }
+            {($_ -ge 13.9) -and ($_ -le 17.1)} { 7 } 
+            {($_ -ge 17.2) -and ($_ -le 20.7)} { 8 }
+            {($_ -ge 20.8) -and ($_ -le 24.4)} { 9 }
+            {($_ -ge 24.5) -and ($_ -le 28.4)} { 10 }
+            {($_ -ge 28.5) -and ($_ -le 32.6)} { 11 }
+            {$_ -ge 32.7} { 12 }
+            default { 'NA','NA','NA','NA' }
+        }
+
+        Write-Verbose "Printing in choosen language: $Language"
+        # Create hastable to return
+        [PSCustomObject]$result = @{
+            Beaufort = $windforce
+            Name = $windnames[$windforce].($Language)
+        }
+
+        # Return results as hashtable
+        return $result
+    }
+}
+
 # Calculate windspeed in meter per second
-function Convert-Windspeed2ms {
+function Convert-Windspeed {
     param (
-        [Parameter(Mandatory=$True,HelpMessage="Enter Windspeed")]
-        [float]$windspeed
+        [Parameter(Mandatory=$True,HelpMessage="Enter Windspeed in MPH")]
+        [float]$windspeed,
+        # Language to use for the output of the wind force
+        [string]$Language = 'EN'
     )
 
-    # Calculate ms
+    # Calculate mph2ms
     $ms = [math]::Round(($windspeed * 0.44704),1)
+    # Calculate mph2kph
+    $kph = [math]::Round(($windspeed * 1.609344),1)
+    # Get Windspeed in Beaufort and name
+    $windforce = Get-WindForce -Speed $ms -Language $Language
 
-    # Return ms
-    return $ms
+    [pscustomobject]$result = @{
+        mph = $windspeed
+        ms = $ms
+        kph = $kph
+        beaufort = $windforce['Beaufort']
+        name = $windforce['Name']
+    }
+
+    # Return result
+    return $result
 }
 
 # Determine Winddirection
@@ -120,7 +293,6 @@ function Get-WindDirection {
         $Value.ItalianName = $WindCompassName[$Sector]
         return $Value
     }
-
     End {}
 }
 
@@ -209,7 +381,8 @@ Export-ModuleMember -Function Convert-RawData
 Export-ModuleMember -Function Convert-Farenheit2Celcius
 Export-ModuleMember -Function Convert-Pressure2hPa
 Export-ModuleMember -Function Convert-Rainrate2mmh
-Export-ModuleMember -Function Convert-Windspeed2ms
+Export-ModuleMember -Function Get-WindForce
+Export-ModuleMember -Function Convert-Windspeed
 Export-ModuleMember -Function Get-WindDirection
 Export-ModuleMember -Function Get-Dewpoint
 Export-ModuleMember -Function Get-Windchill

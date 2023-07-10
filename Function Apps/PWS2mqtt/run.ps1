@@ -16,6 +16,7 @@ function Get-DomoticzMessage {
         [string]$CustomEvent
     )
     # Prepare domoticz output
+    $weatherData.rainrate_mmh = $weatherData.rainrate_mmh * 100
     $domoticzOutput = $weatherData | ConvertTo-Json
 
     # Define domoticz custom event trigger
@@ -35,6 +36,10 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
     # Convert and calculate european values
     Write-Log -value "Converting the rawdata"
     $rawweatherData = Convert-RawData -rawData $Request.RawBody
+
+    # Prepare wind speed
+    $windspeed = Convert-Windspeed -windspeed $rawweatherData.windspeedmph
+
     [pscustomobject]$weatherData = @{
         temperature_outdoor = Convert-Farenheit2Celcius -farenheit $rawweatherData.tempf
         temperature_indoor = Convert-Farenheit2Celcius -farenheit $rawweatherData.tempinf
@@ -47,8 +52,11 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
         totalrain_mm = Convert-Rainrate2mmh -rainRate $rawweatherData.totalrainin
         solar_radiation = $rawweatherData.solarradiation
         uv = $rawweatherData.uv
-        wind_speed = Convert-Windspeed2ms -windspeed $rawweatherData.windspeedmph
-        wind_gust = Convert-Windspeed2ms -windspeed $rawweatherData.windgustmph
+        wind_speed_ms = $windspeed['ms']
+        wind_speed_kph = $windspeed['kph']
+        wind_scale_beaufort = $windspeed['beaufort']
+        wind_speed_name = $windspeed['name']
+        wind_gust = (Convert-Windspeed -windspeed $rawweatherData.windgustmph)['ms']
         wind_direction = $rawweatherData.winddir
         wind_direction_abbreviation = (Get-WindDirection -Degree $rawweatherData.winddir).Abbreviation
         wind_direction_entext = (Get-WindDirection -Degree $rawweatherData.winddir).Direction

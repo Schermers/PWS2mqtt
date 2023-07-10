@@ -193,7 +193,7 @@ return {
 
 		-- Update Wind sensor
 		-- Bearing in degrees, direction in N, S, NNW etc, speed in m/s, gust in m/s, temperature and chill in Celsius
-		updateWind(pws_wind, pwstable.wind_direction, pwstable.wind_direction_abbreviation, pwstable.wind_speed, pwstable.wind_gust, pwstable.temperature_outdoor, pwstable.windchill)
+		updateWind(pws_wind, pwstable.wind_direction, pwstable.wind_direction_abbreviation, pwstable.wind_speed_ms, pwstable.wind_gust, pwstable.temperature_outdoor, pwstable.windchill)
 
 		-- Update text sensors
 		updateText(pws_wind_direction_entext, pwstable.wind_direction_entext)
