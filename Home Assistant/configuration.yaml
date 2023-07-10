@@ -66,6 +66,8 @@ mqtt:
       state_topic: "pws/MyPWS/wind_speed_kph"
     - name: "PWS - Wind scale beaufort"
       state_topic: "pws/MyPWS/wind_scale_beaufort"
+    - name: "PWS - Wind name"
+      state_topic: "pws/MyPWS/wind_speed_name"
     - name: "PWS - Wind gust"
       unit_of_measurement: "m/s"
       state_topic: "pws/MyPWS/wind_gust"
