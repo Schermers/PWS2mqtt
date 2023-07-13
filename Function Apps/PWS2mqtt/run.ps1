@@ -6,6 +6,7 @@ param($Request, $TriggerMetadata)
 
 # Define script var to its name
 $env:script = ($MyInvocation.MyCommand.Name).replace("_","")
+Write-Log "Start of function app"
 
 # Function to prepare domoticz message
 function Get-DomoticzMessage {
@@ -67,6 +68,11 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
         heat_index = Get-HeatIndex -outdoorFarenheit $rawweatherData.tempf -outdoorHumidity $rawweatherData.humidity
     }
 
+    # Debug wrong temperature
+    if($weatherData['temperature_outdoor'] -eq -17,8) {
+        $Request | Export-Clixml "rawRequest.xml"
+        $rawweatherData | Export-Clixml "rawWeatherData.xml"
+    }
     # Export for debugging
     #$Request | Export-Clixml "rawRequest.xml"
     #$Request.RawBody | Export-Clixml "rawbody.xml"

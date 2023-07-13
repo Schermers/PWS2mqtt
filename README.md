@@ -28,11 +28,20 @@ Look at the [docker-comopose.yml](docker-compose.yml) for the docker setup that 
 2. This requires the [HA MQTT integration](https://www.home-assistant.io/integrations/mqtt)
 
 ### Domoticz
-1. Create dummy devices (see dzVents script for details)
-1. Add dzVents script
-2. Update idx values in dzVents script
-1. Add JSON.lua to your domoticz folder
-1. Enter DomoticzInTopic variable in .env.azfunc
+1. Create dummy devices (see [dzVents script](Domoticz/scripts/dzVents/scripts/PWS_update_weatherStation.lua) for details)
+2. Goto your Domoticz
+2. Click hardware
+2. Add hardware
+2. Enter a name (for example: weatherStation)
+2. Type: 'Dummy (Does nothing, use for virtual switches only)'
+3. On your created dummy hardware click: Create virtual sensor
+4. Name: PWS Indoor climate
+4. Type: Temp+Hum
+3. Do those previous steps (from: 'Create virtual sensor') for every device you would like to have (check the [dzVents script](Domoticz/scripts/dzVents/scripts/PWS_update_weatherStation.lua) for details)
+1. Download and add [dzVents script](Domoticz/scripts/dzVents/scripts/PWS_update_weatherStation.lua) to your dzVents script folder (domoticz/scripts/dzVents/scripts/PWS_update_weatherStation.lua)
+2. Update idx values in dzVents script conform created virtual sensors
+1. Add [JSON.lua](https://github.com/domoticz/domoticz/blob/master/scripts/lua/JSON.lua) to your domoticz folder (domoticz/scripts/lua/JSON.lua)
+1. Enter DomoticzInTopic variable in .env.azfunc (Default value: "domoticz/PWS2mqtt")
 
 ## Supported devices
 In general, if the station is supplied with `EasyWeather` software (version 1.4.x, 1.5.x, 1.6.x), it is likely that the station will work with this HA Configuration!
