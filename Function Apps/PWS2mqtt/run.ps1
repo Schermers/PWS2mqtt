@@ -30,6 +30,9 @@ function Get-DomoticzMessage {
     return $domoticzMessage
 }
 
+# Log raw data request
+Write-Log "Incoming data: $($request.RawBody)"
+
 # Verify if incoming data contains weather data
 if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") {
     Write-Log "Incomging data seems valid weather data, continue processing"
@@ -108,7 +111,7 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
 
     # Create array of MQTT instances
     $MQTTinstances = @() 
-    Write-Log
+
     # Add MQTT properties to array
     $MQTTinstances += [PSCustomObject]@{
         MQTTserver = $env:MQTTserver;
