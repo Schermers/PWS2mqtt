@@ -40,42 +40,152 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
     # Convert and calculate european values
     Write-Log -value "Converting the rawdata"
     $rawweatherData = Convert-RawData -rawData $Request.RawBody
+    
+    # Create hash table
+    [pscustomobject]$weatherData = @{}
 
-    # Prepare wind speed
-    $windspeed = Convert-Windspeed -windspeed $rawweatherData.windspeedmph
-
-    [pscustomobject]$weatherData = @{
-        temperature_outdoor = Convert-Farenheit2Celcius -farenheit $rawweatherData.tempf
-        temperature_indoor = Convert-Farenheit2Celcius -farenheit $rawweatherData.tempinf
-        humidity_outdoor = $rawweatherData.humidity
-        humidity_indoor = $rawweatherData.humidityin
-        barometer_relative = Convert-Pressure2hPa -pressure $rawweatherData.baromrelin
-        barometer_absolute = Convert-Pressure2hPa -pressure $rawweatherData.baromabsin
-        rainrate_mmh = Convert-Rainrate2mmh -rainRate $rawweatherData.rainratein
-        rain_mm = Convert-Rainrate2mmh -rainRate $rawweatherData.dailyrainin
-        totalrain_mm = Convert-Rainrate2mmh -rainRate $rawweatherData.totalrainin
-        solar_radiation = $rawweatherData.solarradiation
-        uv = $rawweatherData.uv
-        wind_speed_ms = $windspeed['ms']
-        wind_speed_kph = $windspeed['kph']
-        wind_scale_beaufort = $windspeed['beaufort']
-        wind_speed_name = $windspeed['name']
-        wind_gust = (Convert-Windspeed -windspeed $rawweatherData.windgustmph)['ms']
-        wind_direction = $rawweatherData.winddir
-        wind_direction_abbreviation = (Get-WindDirection -Degree $rawweatherData.winddir).Abbreviation
-        wind_direction_entext = (Get-WindDirection -Degree $rawweatherData.winddir).Direction
-        stationtype = $rawweatherData.stationtype
-        model = $rawweatherData.model
-        dewpoint = Get-Dewpoint -outdoorFarenheit $rawweatherData.tempf -outdoorHumidity $rawweatherData.humidity
-        windchill = Get-Windchill -windspeed $rawweatherData.windspeedmph -outdoorFarenheit $rawweatherData.tempf
-        heat_index = Get-HeatIndex -outdoorFarenheit $rawweatherData.tempf -outdoorHumidity $rawweatherData.humidity
+    # Check if 'outdoor temperature' is passed
+    if($rawweatherData.tempf) {
+        $weatherData += @{        
+            temperature_outdoor = Convert-Farenheit2Celcius -farenheit $rawweatherData.tempf
+        }
+        # Check if 'outdoor humidity' is passed
+        if($rawweatherData.humidity){
+            $weatherData += @{        
+                dewpoint = Get-Dewpoint -outdoorFarenheit $rawweatherData.tempf -outdoorHumidity $rawweatherData.humidity
+                heat_index = Get-HeatIndex -outdoorFarenheit $rawweatherData.tempf -outdoorHumidity $rawweatherData.humidity
+            }   
+        }
+        # Check if 'wind speed' is passed
+        if($rawweatherData.windspeedmph){
+            $weatherData += @{        
+                windchill = Get-Windchill -windspeed $rawweatherData.windspeedmph -outdoorFarenheit $rawweatherData.tempf
+            }   
+        }
     }
 
-    # Debug wrong temperature
-    if($weatherData['temperature_outdoor'] -eq -17,8) {
-        $Request | Export-Clixml "rawRequest.xml"
-        $rawweatherData | Export-Clixml "rawWeatherData.xml"
+    # Check if 'indoor temperature' is passed
+    if($rawweatherData.tempinf) {
+        $weatherData += @{        
+            temperature_indoor = Convert-Farenheit2Celcius -farenheit $rawweatherData.tempinf
+        }
     }
+    
+    # Check if 'outdoor humidity' is passed
+    if($rawweatherData.humidity) {
+        $weatherData += @{        
+            humidity_outdoor = $rawweatherData.humidity
+        }
+    }
+
+    # Check if 'indoor humidity' is passed
+    if($rawweatherData.humidityin) {
+        $weatherData += @{        
+            humidity_indoor = $rawweatherData.humidityin
+        }
+    }
+
+    # Check if 'barometer relative' is passed
+    if($rawweatherData.baromrelin) {
+        $weatherData += @{        
+            barometer_relative = Convert-Pressure2hPa -pressure $rawweatherData.baromrelin
+        }
+    }
+
+    # Check if 'barometer absolute' is passed
+    if($rawweatherData.baromabsin) {
+        $weatherData += @{        
+            barometer_absolute = Convert-Pressure2hPa -pressure $rawweatherData.baromabsin
+        }
+    }
+
+    # Check if 'rainrate' is passed
+    if($rawweatherData.rainratein) {
+        $weatherData += @{        
+            rainrate_mmh = Convert-Rainrate2mmh -rainRate $rawweatherData.rainratein
+        }
+    }
+
+    # Check if 'daily rain'' is passed
+    if($rawweatherData.dailyrainin) {
+        $weatherData += @{        
+            rain_mm = Convert-Rainrate2mmh -rainRate $rawweatherData.dailyrainin
+        }
+    }
+
+    # Check if 'total rain' is passed
+    if($rawweatherData.totalrainin) {
+        $weatherData += @{        
+            totalrain_mm = Convert-Rainrate2mmh -rainRate $rawweatherData.totalrainin
+        }
+    }
+
+    # Check if 'solar' is passed
+    if($rawweatherData.solarradiation) {
+        $weatherData += @{        
+            solar_radiation = $rawweatherData.solarradiation
+        }
+    }
+
+    # Check if 'uv' is passed
+    if($rawweatherData.uv) {
+        $weatherData += @{        
+            uv = $rawweatherData.uv
+        }
+    }
+
+    # Check if 'windspeed' is passed
+    if($rawweatherData.windspeedmph) {
+        # Prepare wind speed
+        $windspeed = Convert-Windspeed -windspeed $rawweatherData.windspeedmph
+        
+        $weatherData += @{        
+            wind_speed_ms = $windspeed['ms']
+            wind_speed_kph = $windspeed['kph']
+            wind_scale_beaufort = $windspeed['beaufort']
+            wind_speed_name = $windspeed['name']
+        }
+    }
+
+    # Check if 'wind gust' is passed
+    if($rawweatherData.windgustmph) {
+        # Prepare wind speed
+        $windspeed = Convert-Windspeed -windspeed $rawweatherData.windgustmph
+        
+        $weatherData += @{        
+            wind_gust_ms = $windspeed['ms']
+            wind_gust_kph = $windspeed['kph']
+            wind_gust_scale_beaufort = $windspeed['beaufort']
+            wind_gust_name = $windspeed['name']
+        }
+    }
+
+    # Check if 'wind direction' is passed
+    if($rawweatherData.winddir) {
+        # Prepare wind speed
+        $winddirection = Get-WindDirection -Degree $rawweatherData.winddir
+        
+        $weatherData += @{        
+            wind_direction = $rawweatherData.winddir
+            wind_direction_abbreviation = $winddirection.Abbreviation
+            wind_direction_entext = $winddirection.Direction    
+        }
+    }
+
+    # Check if 'stationtype' is passed
+    if($rawweatherData.stationtype) {
+        $weatherData += @{        
+            stationtype = $rawweatherData.stationtype
+        }
+    }
+
+    # Check if 'model'' is passed
+    if($rawweatherData.model) {
+        $weatherData += @{        
+            model = $rawweatherData.model
+        }
+    }
+
     # Export for debugging
     #$Request | Export-Clixml "rawRequest.xml"
     #$Request.RawBody | Export-Clixml "rawbody.xml"

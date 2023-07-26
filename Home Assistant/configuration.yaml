@@ -55,7 +55,7 @@ mqtt:
       device_class: illuminance
       unit_of_measurement: "UV Index"
       state_topic: "pws/MyPWS/uv"
-    # Wind
+    # Wind speed
     - name: "PWS - Wind speed m/s"
       unit_of_measurement: "m/s"
       state_class: measurement
@@ -68,9 +68,20 @@ mqtt:
       state_topic: "pws/MyPWS/wind_scale_beaufort"
     - name: "PWS - Wind name"
       state_topic: "pws/MyPWS/wind_speed_name"
-    - name: "PWS - Wind gust"
+    # Wind gust
+    - name: "PWS - Wind gust m/s"
       unit_of_measurement: "m/s"
-      state_topic: "pws/MyPWS/wind_gust"
+      state_class: measurement
+      state_topic: "pws/MyPWS/wind_gust_ms"
+    - name: "PWS - Wind gust km/h"
+      unit_of_measurement: "km/h"
+      state_class: measurement
+      state_topic: "pws/MyPWS/wind_gust_kph"
+    - name: "PWS - Wind gust in scale beaufort"
+      state_topic: "pws/MyPWS/wind_gust_scale_beaufort"
+    - name: "PWS - Wind gust name"
+      state_topic: "pws/MyPWS/wind_gust_name"
+    # Wind direction
     - name: "PWS - Wind direction"
       unit_of_measurement: "°"
       state_topic: "pws/MyPWS/wind_direction"
