@@ -56,11 +56,17 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
                 heat_index = Get-HeatIndex -outdoorFarenheit $rawweatherData.tempf -outdoorHumidity $rawweatherData.humidity
             }   
         }
+        else {
+            Write-Log "humidity_outdoor (humidity) not found"
+        }
         # Check if 'wind speed' is passed
         if($rawweatherData.windspeedmph){
             $weatherData += @{        
                 windchill = Get-Windchill -windspeed $rawweatherData.windspeedmph -outdoorFarenheit $rawweatherData.tempf
             }   
+        }
+        else {
+            Write-Log "winspeed (winspeedmph) not found"
         }
     }
 
@@ -70,12 +76,18 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
             temperature_indoor = Convert-Farenheit2Celcius -farenheit $rawweatherData.tempinf
         }
     }
+    else {
+        Write-Log "temperature_indoor (tempinf) not found"
+    }
     
     # Check if 'outdoor humidity' is passed
     if($rawweatherData.humidity) {
         $weatherData += @{        
             humidity_outdoor = $rawweatherData.humidity
         }
+    }
+    else {
+        Write-Log "humidity_outdoor (humidity) not found"
     }
 
     # Check if 'indoor humidity' is passed
@@ -84,12 +96,18 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
             humidity_indoor = $rawweatherData.humidityin
         }
     }
+    else {
+        Write-Log "humidity_indoor (humidityin) not found"
+    }
 
     # Check if 'barometer relative' is passed
     if($rawweatherData.baromrelin) {
         $weatherData += @{        
             barometer_relative = Convert-Pressure2hPa -pressure $rawweatherData.baromrelin
         }
+    }
+    else {
+        Write-Log "barometer_relative (baromrelin) not found"
     }
 
     # Check if 'barometer absolute' is passed
@@ -98,12 +116,18 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
             barometer_absolute = Convert-Pressure2hPa -pressure $rawweatherData.baromabsin
         }
     }
+    else {
+        Write-Log "barometer_absolute (baromabsin) not found"
+    }
 
     # Check if 'rainrate' is passed
     if($rawweatherData.rainratein) {
         $weatherData += @{        
             rainrate_mmh = Convert-Rainrate2mmh -rainRate $rawweatherData.rainratein
         }
+    }
+    else {
+        Write-Log "rainrate_mmh (rainratein) not found"
     }
 
     # Check if 'daily rain'' is passed
@@ -112,12 +136,18 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
             rain_mm = Convert-Rainrate2mmh -rainRate $rawweatherData.dailyrainin
         }
     }
+    else {
+        Write-Log "rain_mm (dailyrainin) not found"
+    }
 
     # Check if 'total rain' is passed
     if($rawweatherData.totalrainin) {
         $weatherData += @{        
             totalrain_mm = Convert-Rainrate2mmh -rainRate $rawweatherData.totalrainin
         }
+    }
+    else {
+        Write-Log "totalrain_mm (totalrainin) not found"
     }
 
     # Check if 'solar' is passed
@@ -126,12 +156,18 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
             solar_radiation = $rawweatherData.solarradiation
         }
     }
+    else {
+        Write-Log "solar_radiation (solarradiation) not found"
+    }
 
     # Check if 'uv' is passed
     if($rawweatherData.uv) {
         $weatherData += @{        
             uv = $rawweatherData.uv
         }
+    }
+    else {
+        Write-Log "uv (uv) not found"
     }
 
     # Check if 'windspeed' is passed
@@ -146,6 +182,9 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
             wind_speed_name = $windspeed['name']
         }
     }
+    else {
+        Write-Log "wind_speed (windspeedmph) not found"
+    }
 
     # Check if 'wind gust' is passed
     if($rawweatherData.windgustmph) {
@@ -159,6 +198,9 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
             wind_gust_name = $windspeed['name']
         }
     }
+    else {
+        Write-Log "wind_gust (windgustmph) not found"
+    }
 
     # Check if 'wind direction' is passed
     if($rawweatherData.winddir) {
@@ -171,6 +213,9 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
             wind_direction_entext = $winddirection.Direction    
         }
     }
+    else {
+        Write-Log "wind_direction (winddir) not found"
+    }
 
     # Check if 'stationtype' is passed
     if($rawweatherData.stationtype) {
@@ -178,12 +223,18 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
             stationtype = $rawweatherData.stationtype
         }
     }
+    else {
+        Write-Log "stationtype (stationtype) not found"
+    }
 
     # Check if 'model'' is passed
     if($rawweatherData.model) {
         $weatherData += @{        
             model = $rawweatherData.model
         }
+    }
+    else {
+        Write-Log "model (model) not found"
     }
 
     # Export for debugging
