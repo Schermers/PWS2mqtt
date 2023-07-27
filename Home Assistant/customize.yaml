@@ -1,0 +1,72 @@
+# PWS2mqtt
+sensor.pws_mypws_temperature_outdoor:
+  friendly_name: "Buitentemperatuur"
+sensor.pws_mypws_temperature_indoor:
+  friendly_name: "Binnentemperatuur"
+sensor.pws_mypws_humidity_outdoor:
+  friendly_name: "Luchtvochtigheid buiten"
+  icon: mdi:water
+sensor.pws_mypws_humidity_indoor:
+  friendly_name: "Luchtvochtigheid binnen"
+  icon: mdi:water
+sensor.pws_mypws_barometer_relative:
+  friendly_name: "Barometer (relative)"
+sensor.pws_mypws_barometer_absolute:
+  friendly_name: "Barometer (absolute)"
+sensor.pws_mypws_rainrate:
+  friendly_name: "Regensnelheid"
+  icon: mdi:water
+sensor.pws_mypws_daily_rain:
+  friendly_name: "Neerslag"
+  icon: mdi:water
+sensor.pws_mypws_rain_total:
+  friendly_name: "Neerslag totaal"
+  icon: mdi:water
+sensor.pws_mypws_solar_radiation:
+  friendly_name: "Zonnestraling"
+  icon: mdi:white-balance-sunny
+sensor.pws_mypws_uv:
+  friendly_name: "UV"
+sensor.pws_mypws_wind_speed_ms:
+  friendly_name: "Windsnelheid m/s"
+  icon: mdi:weather-windy
+sensor.pws_mypws_wind_speed_kmh:
+  friendly_name: "Windsnelheid km/h"
+  icon: mdi:weather-windy
+sensor.pws_mypws_wind_scale_beaufort:
+  friendly_name: "Windschaal van beaufort"
+  icon: mdi:weather-windy
+sensor.pws_mypws_wind_name:
+  friendly_name: "Windnaam"
+  icon: mdi:weather-windy
+sensor.pws_mypws_wind_gust_ms:
+  friendly_name: "Windvlaag m/s"
+  icon: mdi:weather-windy
+sensor.pws_mypws_wind_gust_kmh:
+  friendly_name: "Weerstatation - Windvlaag km/h"
+  icon: mdi:weather-windy
+sensor.pws_mypws_wind_gust_in_scale_beaufort:
+  friendly_name: "Windstoot in schaal van beaufort"
+  icon: mdi:weather-windy
+sensor.pws_mypws_wind_gust_name:
+  friendly_name: "Windstootnaam"
+  icon: mdi:weather-windy
+sensor.pws_mypws_wind_direction:
+  friendly_name: "Windrichting"
+  icon: mdi:weather-windy
+sensor.pws_mypws_wind_direction_text:
+  friendly_name: "Windrichting (tekst)"
+  icon: mdi:weather-windy
+sensor.pws_mypws_wind_direction_abbreviation:
+  friendly_name: "Windrichting (akorting)"
+  icon: mdi:weather-windy
+sensor.pws_mypws_stationtype:
+  friendly_name: "Stationtype"
+sensor.pws_mypws_model:
+  friendly_name: "Model"
+sensor.pws_mypws_dewpoint:
+  friendly_name: "Dauwpunt"
+sensor.pws_mypws_windchill:
+  friendly_name: "Gevoelstemperatuur"
+sensor.pws_mypws_heat_index:
+  friendly_name: "Hitte index"

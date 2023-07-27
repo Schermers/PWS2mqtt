@@ -1,113 +1,113 @@
 mqtt:
   sensor:
     # Temperature
-    - name: "PWS - Temperature"
+    - name: pws_mypws_temperature_outdoor
       device_class: temperature
       unit_of_measurement: "°C"
       state_class: measurement
       state_topic: "pws/MyPWS/temperature_outdoor"
-    - name: "PWS - Temperature (indoor)"
+    - name: pws_mypws_temperature_indoor
       device_class: temperature
       unit_of_measurement: "°C"
       state_class: measurement
       state_topic: "pws/MyPWS/temperature_indoor"
     # Humidity
-    - name: "PWS - Humidity"
+    - name: pws_mypws_humidity_outdoor
       device_class: humidity
       unit_of_measurement: "%"
       state_class: measurement
       state_topic: "pws/MyPWS/humidity_outdoor"
-    - name: "PWS - Humidity (indoor)"
+    - name: pws_mypws_humidity_indoor
       device_class: humidity
       unit_of_measurement: "%"
       state_class: measurement
       state_topic: "pws/MyPWS/humidity_indoor"
     # Barometer
-    - name: "PWS - Barometer (relative)"
+    - name: pws_mypws_barometer_relative
       device_class: pressure
       unit_of_measurement: "hPa"
       state_class: measurement
       state_topic: "pws/MyPWS/barometer_relative"
-    - name: "PWS - Barometer (absolute)"
+    - name: pws_mypws_barometer_absolute
       device_class: pressure
       unit_of_measurement: "hPa"
       state_class: measurement
       state_topic: "pws/MyPWS/barometer_absolute"
     # Rain
-    - name: "PWS - Rainrate"
+    - name: pws_mypws_rainrate
       unit_of_measurement: "mm/h"
       state_topic: "pws/MyPWS/rainrate_mmh"
-    - name: "PWS - Daily rain"
+    - name: pws_mypws_daily_rain
       unit_of_measurement: "mm"
       state_class: measurement
       state_topic: "pws/MyPWS/rain_mm"
-    - name: "PWS - Rain total"
+    - name: pws_mypws_rain_total
       unit_of_measurement: "mm"
       state_class: measurement
       state_topic: "pws/MyPWS/totalrain_mm"
     # Sun
-    - name: "PWS - Solar radiation"
+    - name: pws_mypws_solar_radiation
       device_class: illuminance
       unit_of_measurement: "W/m²"
       state_class: measurement
       state_topic: "pws/MyPWS/solar_radiation"
-    - name: "PWS - UV"
+    - name: pws_mypws_uv
       device_class: illuminance
       unit_of_measurement: "UV Index"
       state_topic: "pws/MyPWS/uv"
     # Wind speed
-    - name: "PWS - Wind speed m/s"
+    - name: pws_mypws_wind_speed_ms
       unit_of_measurement: "m/s"
       state_class: measurement
       state_topic: "pws/MyPWS/wind_speed_ms"
-    - name: "PWS - Wind speed km/h"
+    - name: pws_mypws_wind_speed_kmh
       unit_of_measurement: "km/h"
       state_class: measurement
       state_topic: "pws/MyPWS/wind_speed_kph"
-    - name: "PWS - Wind scale beaufort"
+    - name: pws_mypws_wind_scale_beaufort
       state_topic: "pws/MyPWS/wind_scale_beaufort"
-    - name: "PWS - Wind name"
+    - name: pws_mypws_wind_name
       state_topic: "pws/MyPWS/wind_speed_name"
     # Wind gust
-    - name: "PWS - Wind gust m/s"
+    - name: pws_mypws_wind_gust_ms
       unit_of_measurement: "m/s"
       state_class: measurement
       state_topic: "pws/MyPWS/wind_gust_ms"
-    - name: "PWS - Wind gust km/h"
+    - name: pws_mypws_wind_gust_kmh
       unit_of_measurement: "km/h"
       state_class: measurement
       state_topic: "pws/MyPWS/wind_gust_kph"
-    - name: "PWS - Wind gust in scale beaufort"
+    - name: pws_mypws_wind_gust_in_scale_beaufort
       state_topic: "pws/MyPWS/wind_gust_scale_beaufort"
-    - name: "PWS - Wind gust name"
+    - name: pws_mypws_wind_gust_name
       state_topic: "pws/MyPWS/wind_gust_name"
     # Wind direction
-    - name: "PWS - Wind direction"
+    - name: pws_mypws_wind_direction
       unit_of_measurement: "°"
       state_topic: "pws/MyPWS/wind_direction"
-    - name: "PWS - Wind direction (text)"
+    - name: pws_mypws_wind_direction_text
       state_topic: "pws/MyPWS/wind_direction_entext"
-    - name: "PWS - Wind direction (abbreviation)"
+    - name: pws_mypws_wind_direction_abbreviation
       state_topic: "pws/MyPWS/wind_direction_abbreviation"
     # Misc
-    - name: "PWS - Stationtype"
+    - name: pws_mypws_stationtype
       state_topic: "pws/MyPWS/stationtype"
-    - name: "PWS - Model"
+    - name: pws_mypws_model
       state_topic: "pws/MyPWS/model"
     # Dewpoint
-    - name: "PWS - Dewpoint"
+    - name: pws_mypws_dewpoint
       device_class: temperature
       unit_of_measurement: "°C"
       state_class: measurement
       state_topic: "pws/MyPWS/dewpoint"
     # Windchill
-    - name: "PWS - Windchill"
+    - name: pws_mypws_windchill
       device_class: temperature
       unit_of_measurement: "°C"
       state_class: measurement
       state_topic: "pws/MyPWS/windchill"
     # Heat index
-    - name: "PWS - Heat index"
+    - name: pws_mypws_heat_index
       device_class: temperature
       unit_of_measurement: "°C"
       state_class: measurement
