@@ -112,7 +112,7 @@ function Get-WindForce {
                 IT = 'Bava di vento'
                 FR = 'Très légère brise'
                 DE = 'Leichter Zug'
-                NL = 'Zeer zwar'
+                NL = 'Zeer zwak'
             }
             2 = @{
                 EN = 'Light breeze'

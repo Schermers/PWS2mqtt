@@ -10,9 +10,9 @@ sensor.pws_mypws_humidity_indoor:
   friendly_name: "Luchtvochtigheid binnen"
   icon: mdi:water
 sensor.pws_mypws_barometer_relative:
-  friendly_name: "Barometer (relative)"
+  friendly_name: "Barometer (relatief)"
 sensor.pws_mypws_barometer_absolute:
-  friendly_name: "Barometer (absolute)"
+  friendly_name: "Barometer (absoluut)"
 sensor.pws_mypws_rainrate:
   friendly_name: "Regensnelheid"
   icon: mdi:water
@@ -43,13 +43,13 @@ sensor.pws_mypws_wind_gust_ms:
   friendly_name: "Windvlaag m/s"
   icon: mdi:weather-windy
 sensor.pws_mypws_wind_gust_kmh:
-  friendly_name: "Weerstatation - Windvlaag km/h"
+  friendly_name: "Windvlaag km/h"
   icon: mdi:weather-windy
 sensor.pws_mypws_wind_gust_in_scale_beaufort:
-  friendly_name: "Windstoot in schaal van beaufort"
+  friendly_name: "Windvlaag in schaal van beaufort"
   icon: mdi:weather-windy
 sensor.pws_mypws_wind_gust_name:
-  friendly_name: "Windstootnaam"
+  friendly_name: "Windvlaagnaam"
   icon: mdi:weather-windy
 sensor.pws_mypws_wind_direction:
   friendly_name: "Windrichting"

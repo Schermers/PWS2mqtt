@@ -16,7 +16,7 @@ local LOGGING = false
 -- JSON function required to decode MQTT data
 local json = (loadfile "/opt/domoticz/userdata/scripts/lua/JSON.lua")()
 -- Source: https://github.com/domoticz/domoticz/blob/master/scripts/lua/JSON.lua
-
+		
 --####################################################################--
 	-- Temperature & Humidity sensors
 		local pws_temphum_indoor = 3959				-- (Dummy device: Temp+Hum)
@@ -84,7 +84,7 @@ return {
 		-- Function to update temperature devices
 		local function updateTemp(dzDevice, temp)
 			-- If device exist update it
-			if deviceExists(dzDevice) then
+			if (deviceExists(dzDevice) and temp) then
 				if LOGGING then domoticz.log('PWS_update_weatherStation: Update device: '..domoticz.devices(dzDevice).name.. ' temperature: '..temp) end
 				domoticz.devices(dzDevice).updateTemperature(temp) 
 			end
@@ -93,7 +93,7 @@ return {
 		-- Function to update humidity devices
 		local function updateHum(dzDevice, hum)
 			-- If device exist update it
-			if deviceExists(dzDevice) then
+			if (deviceExists(dzDevice) and hum) then
 				if LOGGING then domoticz.log('PWS_update_weatherStation: Update device: '..domoticz.devices(dzDevice).name.. ' humidity: '..hum) end
 				domoticz.devices(dzDevice).updateHumidity(hum, domoticz.HUM_NORMAL) 
 			end
@@ -102,7 +102,7 @@ return {
 		-- Function to update combined temperature and humidity devices
 		local function updateTempHum(dzDevice, temp, hum)
 			-- If device exist update it
-			if deviceExists(dzDevice) then
+			if (deviceExists(dzDevice) and temp and hum) then
 				if LOGGING then domoticz.log('PWS_update_weatherStation: Update device: '..domoticz.devices(dzDevice).name.. ' temperature: '..temp..' humidity: '..hum) end
 				domoticz.devices(dzDevice).updateTempHum(temp, hum) 
 			end
@@ -111,7 +111,7 @@ return {
 		-- Function to update barometer devices
 		local function updateBarometer(dzDevice, pressure)
 			-- If device exist update it
-			if deviceExists(dzDevice) then
+			if (deviceExists(dzDevice) and pressure) then
 				if LOGGING then domoticz.log('PWS_update_weatherStation: Update device: '..domoticz.devices(dzDevice).name.. ' pressure: '..pressure) end
 				domoticz.devices(dzDevice).updateBarometer(pressure) 
 			end
@@ -120,7 +120,7 @@ return {
 		-- Function to update rain devices
 		local function updateRain(dzDevice, rate, counter)
 			-- If device exist update it
-			if deviceExists(dzDevice) then 
+			if (deviceExists(dzDevice) and rate and counter) then 
 				if LOGGING then domoticz.log('PWS_update_weatherStation: Update device: '..domoticz.devices(dzDevice).name.. ' rain rate: '..rate..' counter: '..counter) end
 				domoticz.devices(dzDevice).updateRain(rate, counter) 
 			end
@@ -129,7 +129,7 @@ return {
 		-- Function to update solar radiation devices
 		local function updateRadiation(dzDevice, radiation)
 			-- If device exist update it
-			if deviceExists(dzDevice) then
+			if (deviceExists(dzDevice) and radiation) then
 				if LOGGING then domoticz.log('PWS_update_weatherStation: Update device: '..domoticz.devices(dzDevice).name.. ' radiation: '..radiation) end
 				domoticz.devices(dzDevice).updateRadiation(radiation) 
 			end
@@ -138,7 +138,7 @@ return {
 		-- Function to update uv devices
 		local function updateUV(dzDevice, uv)
 			-- If device exist update it
-			if deviceExists(dzDevice) then
+			if (deviceExists(dzDevice) and uv) then
 				if LOGGING then domoticz.log('PWS_update_weatherStation: Update device: '..domoticz.devices(dzDevice).name.. ' UV: '..uv) end
 				domoticz.devices(dzDevice).updateUV(uv) 
 			end
@@ -148,7 +148,7 @@ return {
 		-- Bearing in degrees, direction in N, S, NNW etc, speed in m/s, gust in m/s, temperature and chill in Celsius
 		local function updateWind(dzDevice, bearing, direction, speed, gust, temperature, chill)
 			-- If device exist update it
-			if deviceExists(dzDevice) then 
+			if (deviceExists(dzDevice) and bearing and direction and speed and gust and temperature and chill) then 
 				if LOGGING then domoticz.log('PWS_update_weatherStation: Update device: '..domoticz.devices(dzDevice).name.. ' bearing: '..bearing..' direction: '..direction..' speed: '..speed..' gust: '..gust..' temperature: '..temperature..' windchill: '..chill) end
 				domoticz.devices(dzDevice).updateWind(bearing, direction, speed, gust, temperature, chill) 
 			end
@@ -157,9 +157,9 @@ return {
 		-- Function to update text devices
 		local function updateText(dzDevice, text)
 			-- If device exist update it
-			if deviceExists(dzDevice) then 
+			if (deviceExists(dzDevice) and text) then 
 				if LOGGING then domoticz.log('PWS_update_weatherStation: Update device: '..domoticz.devices(dzDevice).name.. ' text: '..text) end
-				domoticz.devices(dzDevice).updateText(text) 
+				domoticz.devices(dzDevice).updateText(text)
 			end
 		end
 
@@ -193,7 +193,7 @@ return {
 
 		-- Update Wind sensor
 		-- Bearing in degrees, direction in N, S, NNW etc, speed in m/s, gust in m/s, temperature and chill in Celsius
-		updateWind(pws_wind, pwstable.wind_direction, pwstable.wind_direction_abbreviation, pwstable.wind_speed_ms, pwstable.wind_gust, pwstable.temperature_outdoor, pwstable.windchill)
+		updateWind(pws_wind, pwstable.wind_direction, pwstable.wind_direction_abbreviation, pwstable.wind_speed_ms, pwstable.wind_gust_ms, pwstable.temperature_outdoor, pwstable.windchill)
 
 		-- Update text sensors
 		updateText(pws_wind_direction_entext, pwstable.wind_direction_entext)
