@@ -37,6 +37,11 @@ Write-Log "Incoming data: $($request.RawBody)"
 if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") {
     Write-Log "Incomging data seems valid weather data, continue processing"
 
+    # Verify if language is filled
+    if(!$($env:Language)) {
+        $env:Language = "EN"
+    }
+
     # Convert and calculate european values
     Write-Log -value "Converting the rawdata"
     $rawweatherData = Convert-RawData -rawData $Request.RawBody
@@ -173,7 +178,7 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
     # Check if 'windspeed' is passed
     if($rawweatherData.windspeedmph) {
         # Prepare wind speed
-        $windspeed = Convert-Windspeed -windspeed $rawweatherData.windspeedmph
+        $windspeed = Convert-Windspeed -windspeed $rawweatherData.windspeedmph -Language $env:Language
         
         $weatherData += @{        
             wind_speed_ms = $windspeed['ms']
@@ -189,7 +194,7 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
     # Check if 'wind gust' is passed
     if($rawweatherData.windgustmph) {
         # Prepare wind speed
-        $windspeed = Convert-Windspeed -windspeed $rawweatherData.windgustmph
+        $windspeed = Convert-Windspeed -windspeed $rawweatherData.windgustmph -Language $env:Language
         
         $weatherData += @{        
             wind_gust_ms = $windspeed['ms']
