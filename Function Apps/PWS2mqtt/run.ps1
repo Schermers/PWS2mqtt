@@ -12,13 +12,17 @@ Write-Log "Start of function app"
 function Get-DomoticzMessage {
     param (
         [Parameter(Mandatory=$True,HelpMessage="Data as array")]
-        [pscustomobject]$weatherData,
+        [pscustomobject]$WeatherData,
         [Parameter(Mandatory=$True,HelpMessage="Custom event to trigger")]
         [string]$CustomEvent
     )
+
+    # Clone object to avoid referencing data
+    $data = $WeatherData.Clone()
+    
     # Prepare domoticz output
-    $weatherData.rainrate_mmh = $weatherData.rainrate_mmh * 100
-    $domoticzOutput = $weatherData | ConvertTo-Json
+    $data.rainrate_mmh = $WeatherData.rainrate_mmh * 100
+    $domoticzOutput = $data | ConvertTo-Json
 
     # Define domoticz custom event trigger
     $domoticzMessage = @{
@@ -295,7 +299,7 @@ if($request.RawBody -like "PASSKEY=*" -and $request.RawBody -like "*tempinf=*") 
     }
 
     # Prepare Domoticz message
-    $domoticzMessage = Get-DomoticzMessage -weatherData $weatherData -CustomEvent $env:DomoticzCustomEvent
+    $domoticzMessage = Get-DomoticzMessage -WeatherData $weatherData -CustomEvent $env:DomoticzCustomEvent
 
     # Loop through every MQTT instance to publish the messages
     foreach($MQTTinstance in $MQTTinstances) {
