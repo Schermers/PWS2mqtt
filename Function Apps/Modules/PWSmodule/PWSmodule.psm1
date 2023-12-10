@@ -376,7 +376,6 @@ function Get-HeatIndex {
 }
 
 # Export functions
-Export-ModuleMember -Function Write-Log
 Export-ModuleMember -Function Convert-RawData
 Export-ModuleMember -Function Convert-Farenheit2Celcius
 Export-ModuleMember -Function Convert-Pressure2hPa
